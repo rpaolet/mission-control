@@ -4,379 +4,731 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestione e Invio Dati Missione</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #2563eb;
-            --primary-hover: #1d4ed8;
-            --bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --text: #1e293b;
-            --text-muted: #64748b;
-            --border: #cbd5e1;
-            --success: #16a34a;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            padding: 20px;
-            line-height: 1.5;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+            color: #1e293b;
         }
-
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 24px;
+        /* Personalizzazione scrollbar per l'anteprima */
+        .preview-scroll::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
         }
-
-        @media (max-width: 768px) {
-            .container {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 24px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            grid-column: 1 / -1;
-            font-size: 1.5rem;
-            color: var(--text);
-            margin-bottom: 4px;
-        }
-
-        h2 {
-            font-size: 1.15rem;
-            margin-bottom: 16px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid var(--border);
-        }
-
-        .form-group {
-            margin-bottom: 14px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-        }
-
-        label {
-            display: block;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 4px;
-            color: var(--text);
-        }
-
-        input, select, textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid var(--border);
+        .preview-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
             border-radius: 6px;
-            font-size: 0.95rem;
-            transition: border-color 0.2s;
         }
-
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        textarea {
-            resize: vertical;
-            min-height: 90px;
-        }
-
-        .preview-box {
-            background-color: #f8fafc;
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 16px;
-            font-family: "Courier New", Courier, monospace;
-            font-size: 0.9rem;
-            white-space: pre-wrap;
-            min-height: 320px;
-            color: #334155;
-            margin-bottom: 16px;
-        }
-
-        .actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .secondary-actions {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        button {
-            padding: 12px 16px;
-            border: none;
+        .preview-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
             border-radius: 6px;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
         }
-
-        button:active {
-            transform: scale(0.99);
-        }
-
-        .btn-primary {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn-secondary {
-            background-color: #e2e8f0;
-            color: var(--text);
-        }
-
-        .btn-secondary:hover {
-            background-color: #cbd5e1;
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--success);
-            color: white;
-            padding: 12px 20px;
-            border-radius: 8px;
-            font-weight: 500;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            opacity: 1;
+        .preview-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
-<body>
+<body class="p-4 md:p-6 lg:p-8 min-h-screen">
 
-<div class="container">
-    <h1>Modulo Rapporto Missione</h1>
+    <div class="max-w-7xl mx-auto">
+        <!-- Intestazione Principale -->
+        <header class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+            <div>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Modulo Rapporto Missione</h1>
+                <p class="text-sm text-slate-500 mt-0.5">Compila i dettagli operativi, di viaggio e le note spese per generare il report.</p>
+            </div>
+            <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-3 py-1.5 rounded-lg text-xs font-semibold border border-blue-200 self-start sm:self-auto">
+                <span class="w-2 h-2 rounded-full bg-blue-600 animate-pulse"></span>
+                Calcolo Rimborsi in Tempo Reale
+            </div>
+        </header>
 
-    <!-- Colonna Sinistra: Inserimento Dati -->
-    <div class="card">
-        <h2>1. Dati della Missione</h2>
-        <form id="missionForm">
-            <div class="form-group">
-                <label for="emailDestinatario">Email Destinatario *</label>
-                <input type="email" id="emailDestinatario" placeholder="es. ufficio.missioni@azienda.it" required>
+        <!-- Griglia Principale a 2 Colonne su Desktop -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+            <!-- COLONNA SINISTRA: Inserimento Dati (7 colonne su 12) -->
+            <div class="lg:col-span-7 space-y-6">
+                <form id="missionForm" class="space-y-6" onsubmit="return false;">
+
+                    <!-- SEZIONE 1: Dati Generali della Missione -->
+                    <section class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200/80">
+                        <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-200">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">1</span>
+                            <h2 class="text-lg font-semibold text-slate-800">Dati Generali della Missione</h2>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label for="emailDestinatario" class="block text-sm font-semibold text-slate-700 mb-1">Email Destinatario *</label>
+                                <input type="email" id="emailDestinatario" placeholder="es. ufficio.missioni@azienda.it" required
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                            </div>
+
+                            <div>
+                                <label for="titoloMissione" class="block text-sm font-semibold text-slate-700 mb-1">Titolo / Oggetto Missione *</label>
+                                <input type="text" id="titoloMissione" placeholder="es. Sopralluogo tecnico sede Milano" required
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="operatore" class="block text-sm font-semibold text-slate-700 mb-1">Operatore / Incaricato *</label>
+                                    <input type="text" id="operatore" placeholder="Nome e Cognome" required
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                </div>
+                                <div>
+                                    <label for="stato" class="block text-sm font-semibold text-slate-700 mb-1">Stato Missione</label>
+                                    <select id="stato"
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                        <option value="Pianificata">Pianificata</option>
+                                        <option value="In corso">In corso</option>
+                                        <option value="Completata" selected>Completata</option>
+                                        <option value="Annullata">Annullata</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="dataMissione" class="block text-sm font-semibold text-slate-700 mb-1">Data Missione *</label>
+                                    <input type="date" id="dataMissione" required
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                </div>
+                                <div>
+                                    <label for="orario" class="block text-sm font-semibold text-slate-700 mb-1">Orario (Inizio - Fine)</label>
+                                    <input type="text" id="orario" placeholder="es. 09:00 - 17:30"
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="luogo" class="block text-sm font-semibold text-slate-700 mb-1">Sede / Cliente di Destinazione *</label>
+                                <input type="text" id="luogo" placeholder="es. Stabilimento Nord - Via Roma 10, Milano" required
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                            </div>
+
+                            <div>
+                                <label for="descrizione" class="block text-sm font-semibold text-slate-700 mb-1">Descrizione Attività Svolte *</label>
+                                <textarea id="descrizione" rows="3" placeholder="Dettaglia le operazioni eseguite durante la missione..." required
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition resize-y"></textarea>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SEZIONE 2: Opzioni di Viaggio & Trasferimento -->
+                    <section class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200/80">
+                        <div class="flex items-center gap-2 pb-3 mb-4 border-b border-slate-200">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">2</span>
+                            <h2 class="text-lg font-semibold text-slate-800">Opzioni di Viaggio & Trasporto</h2>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="partenza" class="block text-sm font-semibold text-slate-700 mb-1">Località di Partenza</label>
+                                    <input type="text" id="partenza" placeholder="es. Sede Centrale (Bologna)"
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                </div>
+                                <div>
+                                    <label for="arrivo" class="block text-sm font-semibold text-slate-700 mb-1">Località di Arrivo / Rientro</label>
+                                    <input type="text" id="arrivo" placeholder="es. Milano (A/R)"
+                                        class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label for="mezzoTrasporto" class="block text-sm font-semibold text-slate-700 mb-1">Mezzo di Trasporto Utilizzato</label>
+                                <select id="mezzoTrasporto"
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm font-medium focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                                    <option value="Auto aziendale">🚗 Auto aziendale</option>
+                                    <option value="Auto propria">🚙 Auto propria (con rimborso chilometrico)</option>
+                                    <option value="Treno">🚆 Treno</option>
+                                    <option value="Aereo">✈️ Aereo</option>
+                                    <option value="Mezzi pubblici / Taxi">🚌 Mezzi pubblici / Taxi</option>
+                                    <option value="Altro">🧭 Altro mezzo</option>
+                                </select>
+                            </div>
+
+                            <!-- Box Condizionale: Calcolo Rimborso Chilometrico Auto Propria -->
+                            <div id="boxAutoPropria" class="hidden p-4 bg-blue-50/80 border border-blue-200 rounded-xl space-y-3 transition-all">
+                                <div class="flex items-center justify-between">
+                                    <span class="text-xs font-bold uppercase tracking-wider text-blue-800">Calcolo Rimborso Chilometrico (Auto Propria)</span>
+                                    <span id="badgeTotaleKm" class="text-sm font-bold text-blue-700 bg-white px-2.5 py-0.5 rounded-md border border-blue-200 shadow-xs">
+                                        Rimborso Km: € 0,00
+                                    </span>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <label for="kmPercorsi" class="block text-xs font-semibold text-slate-700 mb-1">Km Totali Percorsi</label>
+                                        <input type="number" id="kmPercorsi" min="0" step="1" placeholder="es. 240"
+                                            class="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg text-sm focus:outline-none focus:border-blue-600">
+                                    </div>
+                                    <div>
+                                        <label for="tariffaKm" class="block text-xs font-semibold text-slate-700 mb-1">Tariffa Chilometrica (€/km)</label>
+                                        <input type="number" id="tariffaKm" min="0" step="0.01" value="0.45" placeholder="es. 0.45"
+                                            class="w-full px-3 py-2 bg-white border border-blue-300 rounded-lg text-sm focus:outline-none focus:border-blue-600">
+                                    </div>
+                                </div>
+                                <p class="text-xs text-slate-600">L'importo calcolato verrà sommato automaticamente al totale da rimborsare all'operatore.</p>
+                            </div>
+
+                            <div>
+                                <label for="noteViaggio" class="block text-sm font-semibold text-slate-700 mb-1">Note sul Viaggio (opzionale)</label>
+                                <input type="text" id="noteViaggio" placeholder="es. Targa veicolo, codice prenotazione treno/volo, tratte intermedie..."
+                                    class="w-full px-3.5 py-2.5 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600 focus:ring-2 focus:ring-blue-600/20 transition">
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- SEZIONE 3: Dettaglio Spese Sostenute -->
+                    <section class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200/80">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-200">
+                            <div class="flex items-center gap-2">
+                                <span class="flex items-center justify-center w-6 h-6 rounded-full bg-blue-600 text-white text-xs font-bold">3</span>
+                                <h2 class="text-lg font-semibold text-slate-800">Spese Sostenute & Giustificativi</h2>
+                            </div>
+                            <button type="button" onclick="aggiungiVoceSpesa()"
+                                class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white text-xs sm:text-sm font-semibold px-3.5 py-2 rounded-lg shadow-xs transition cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                                </svg>
+                                Aggiungi voce di spesa
+                            </button>
+                        </div>
+
+                        <!-- Contenitore Dinamico delle Voci di Spesa -->
+                        <div id="listaSpese" class="space-y-3">
+                            <!-- Le righe vengono generate dinamicamente via JavaScript -->
+                        </div>
+
+                        <!-- Messaggio stato vuoto -->
+                        <div id="emptySpeseMsg" class="hidden text-center py-6 px-4 bg-slate-50 border border-dashed border-slate-300 rounded-xl">
+                            <p class="text-sm text-slate-500">Nessuna spesa documentata inserita.</p>
+                            <button type="button" onclick="aggiungiVoceSpesa()" class="mt-2 text-xs font-semibold text-blue-600 hover:underline cursor-pointer">
+                                + Clicca qui per inserire la prima spesa
+                            </button>
+                        </div>
+
+                        <!-- Riepilogo Finanziario Rapido -->
+                        <div class="mt-5 pt-4 border-t border-slate-200 bg-slate-50 p-4 rounded-xl">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">Riepilogo Economico Missione</h3>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-sm">
+                                <div class="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-slate-200/80">
+                                    <span class="text-slate-600">Spese documentate:</span>
+                                    <span id="summarySpeseDoc" class="font-semibold text-slate-800">€ 0,00</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-slate-200/80">
+                                    <span class="text-slate-600">Rimborso Km:</span>
+                                    <span id="summaryRimborsoKm" class="font-semibold text-slate-800">€ 0,00</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white px-3 py-2 rounded-lg border border-slate-200/80">
+                                    <span class="text-slate-600">Pagato con Carta Aziendale:</span>
+                                    <span id="summaryCartaAziendale" class="font-semibold text-slate-700">€ 0,00</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-emerald-50 px-3 py-2 rounded-lg border border-emerald-200">
+                                    <span class="font-semibold text-emerald-900">Da rimborsare all'operatore:</span>
+                                    <span id="summaryDaRimborsare" class="font-bold text-emerald-700">€ 0,00</span>
+                                </div>
+                            </div>
+                            <div class="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
+                                <span class="text-sm font-bold text-slate-800">TOTALE COMPLESSIVO MISSIONE:</span>
+                                <span id="summaryTotaleGenerale" class="text-lg font-extrabold text-blue-600">€ 0,00</span>
+                            </div>
+                        </div>
+                    </section>
+                </form>
             </div>
 
-            <div class="form-group">
-                <label for="titoloMissione">Titolo / Oggetto Missione *</label>
-                <input type="text" id="titoloMissione" placeholder="es. Sopralluogo tecnico sede Milano" required>
+            <!-- COLONNA DESTRA: Anteprima e Azioni (5 colonne su 12, sticky su desktop) -->
+            <div class="lg:col-span-5 lg:sticky lg:top-6 space-y-6">
+                <section class="bg-white p-5 md:p-6 rounded-xl shadow-sm border border-slate-200/80">
+                    <div class="flex items-center justify-between pb-3 mb-4 border-b border-slate-200">
+                        <div class="flex items-center gap-2">
+                            <span class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-800 text-white text-xs font-bold">4</span>
+                            <h2 class="text-lg font-semibold text-slate-800">Anteprima Report & Invio</h2>
+                        </div>
+                        <span class="text-xs font-medium text-slate-400">Live Preview</span>
+                    </div>
+
+                    <!-- Box Anteprima Testuale -->
+                    <pre id="previewBox" class="preview-scroll bg-slate-50 border border-slate-300 rounded-xl p-4 font-mono text-xs sm:text-[13px] leading-relaxed text-slate-800 whitespace-pre-wrap overflow-x-auto max-h-[460px] overflow-y-auto mb-5 select-all"></pre>
+
+                    <!-- Pulsanti di Azione -->
+                    <div class="space-y-3">
+                        <button type="button" onclick="inviaEmail()"
+                            class="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 active:scale-[0.99] text-white font-semibold rounded-xl shadow-sm transition flex items-center justify-center gap-2 cursor-pointer">
+                            <span>✉️</span>
+                            <span>Invia Dati via Email</span>
+                        </button>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <button type="button" onclick="copiaTesto()"
+                                class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-800 font-semibold text-sm rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>📋</span>
+                                <span>Copia Testo</span>
+                            </button>
+                            <button type="button" onclick="scaricaTxt()"
+                                class="py-2.5 px-4 bg-slate-100 hover:bg-slate-200 active:scale-[0.99] text-slate-800 font-semibold text-sm rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>💾</span>
+                                <span>Scarica .TXT</span>
+                            </button>
+                        </div>
+
+                        <!-- Reset Modulo con Conferma Inline (senza confirm() nativo) -->
+                        <div class="pt-2">
+                            <button type="button" id="btnResetInit" onclick="mostraConfermaReset()"
+                                class="w-full py-2 px-4 bg-white hover:bg-red-50 text-red-600 font-semibold text-sm rounded-xl border border-red-200 transition cursor-pointer">
+                                🗑️ Svuota Modulo
+                            </button>
+
+                            <div id="boxConfermaReset" class="hidden p-3 bg-red-50 border border-red-200 rounded-xl text-center space-y-2">
+                                <p class="text-xs font-semibold text-red-800">Confermi di voler cancellare tutti i dati inseriti?</p>
+                                <div class="flex gap-2 justify-center">
+                                    <button type="button" onclick="eseguiResetModulo()"
+                                        class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-xs font-semibold rounded-lg cursor-pointer">
+                                        Sì, svuota tutto
+                                    </button>
+                                    <button type="button" onclick="annullaReset()"
+                                        class="px-3 py-1.5 bg-white hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-lg border border-slate-300 cursor-pointer">
+                                        Annulla
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
             </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="operatore">Operatore / Incaricato *</label>
-                    <input type="text" id="operatore" placeholder="Nome e Cognome" required>
-                </div>
-                <div class="form-group">
-                    <label for="stato">Stato Missione</label>
-                    <select id="stato">
-                        <option value="Pianificata">Pianificata</option>
-                        <option value="In corso">In corso</option>
-                        <option value="Completata" selected>Completata</option>
-                        <option value="Annullata">Annullata</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="dataMissione">Data *</label>
-                    <input type="date" id="dataMissione" required>
-                </div>
-                <div class="form-group">
-                    <label for="orario">Orario (Inizio - Fine)</label>
-                    <input type="text" id="orario" placeholder="es. 09:00 - 17:30">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="luogo">Luogo / Destinazione *</label>
-                <input type="text" id="luogo" placeholder="es. Via Roma 10, Milano" required>
-            </div>
-
-            <div class="form-group">
-                <label for="descrizione">Descrizione Attività Svolte *</label>
-                <textarea id="descrizione" placeholder="Dettaglia le operazioni eseguite durante la missione..." required></textarea>
-            </div>
-
-            <div class="form-group">
-                <label for="noteSpese">Note aggiuntive / Rimborsi spese (€)</label>
-                <textarea id="noteSpese" style="min-height: 60px;" placeholder="es. Pedaggio autostradale € 18,50 - Pranzo € 15,00"></textarea>
-            </div>
-        </form>
-    </div>
-
-    <!-- Colonna Destra: Anteprima e Invio -->
-    <div class="card">
-        <h2>2. Anteprima e Trasferimento</h2>
-        <div class="preview-box" id="previewBox"></div>
-
-        <div class="actions">
-            <button type="button" class="btn-primary" onclick="inviaEmail()">
-                ✉️ Invia Dati via Email
-            </button>
-            <div class="secondary-actions">
-                <button type="button" class="btn-secondary" onclick="copiaTesto()">
-                    📋 Copia Testo
-                </button>
-                <button type="button" class="btn-secondary" onclick="scaricaTxt()">
-                    💾 Scarica .TXT
-                </button>
-            </div>
-            <button type="button" class="btn-secondary" style="margin-top: 8px; color: #dc2626;" onclick="resetModulo()">
-                Svuota Modulo
-            </button>
         </div>
     </div>
-</div>
 
-<div id="toast" class="toast">Operazione completata!</div>
+    <!-- Toast di Notifica -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-emerald-600 text-white px-5 py-3 rounded-xl font-medium text-sm shadow-lg opacity-0 translate-y-2 transition-all duration-300 pointer-events-none">
+        Operazione completata!
+    </div>
 
-<script>
-    // Imposta la data odierna come predefinita
-    document.getElementById('dataMissione').valueAsDate = new Date();
+    <script>
+        // Elenco tipologie di spesa disponibili
+        const TIPOLOGIE_SPESA = [
+            "Vitto / Pasti",
+            "Alloggio / Hotel",
+            "Pedaggi autostradali",
+            "Parcheggio",
+            "Carburante",
+            "Biglietti Treno/Aereo/Mezzi",
+            "Taxi / Noleggio",
+            "Altro"
+        ];
 
-    const inputs = document.querySelectorAll('#missionForm input, #missionForm select, #missionForm textarea');
-    const previewBox = document.getElementById('previewBox');
+        // Metodi di pagamento disponibili
+        const METODI_PAGAMENTO = [
+            { value: "Personale", label: "Carta personale / Contanti (da rimborsare)" },
+            { value: "Aziendale", label: "Carta aziendale" }
+        ];
 
-    // Genera il testo formattato del report
-    function generaTestoReport() {
-        const titolo = document.getElementById('titoloMissione').value.trim() || '[Non specificato]';
-        const operatore = document.getElementById('operatore').value.trim() || '[Non specificato]';
-        const stato = document.getElementById('stato').value;
-        const dataRaw = document.getElementById('dataMissione').value;
-        const dataFormattata = dataRaw ? new Date(dataRaw).toLocaleDateString('it-IT') : '[Non specificata]';
-        const orario = document.getElementById('orario').value.trim() || 'Non specificato';
-        const luogo = document.getElementById('luogo').value.trim() || '[Non specificato]';
-        const descrizione = document.getElementById('descrizione').value.trim() || '[Nessuna descrizione inserita]';
-        const noteSpese = document.getElementById('noteSpese').value.trim() || 'Nessuna';
+        let contatoreSpese = 0;
 
-        return `========================================
-RAPPORTO DI MISSIONE
-========================================
+        // Formatta un numero in valuta Euro italiana (es. 12,50 €)
+        function formattaEuro(valore) {
+            const num = isNaN(valore) ? 0 : Number(valore);
+            return new Intl.NumberFormat('it-IT', {
+                style: 'currency',
+                currency: 'EUR'
+            }).format(num);
+        }
+
+        // Inizializzazione al caricamento della pagina
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('dataMissione').valueAsDate = new Date();
+
+            // Aggiungi una prima riga di spesa vuota di default
+            aggiungiVoceSpesa();
+
+            // Listener per tutti gli input statici del form
+            const staticInputs = document.querySelectorAll('#missionForm > section:nth-child(1) input, #missionForm > section:nth-child(1) select, #missionForm > section:nth-child(1) textarea, #missionForm > section:nth-child(2) input, #missionForm > section:nth-child(2) select');
+            staticInputs.forEach(el => {
+                el.addEventListener('input', aggiornaTutto);
+                el.addEventListener('change', aggiornaTutto);
+            });
+
+            // Listener specifico per il cambio mezzo di trasporto
+            document.getElementById('mezzoTrasporto').addEventListener('change', gestisciVisibilitaAutoPropria);
+
+            gestisciVisibilitaAutoPropria();
+            aggiornaTutto();
+        });
+
+        // Mostra o nasconde il pannello Km/Tariffa se selezionata "Auto propria"
+        function gestisciVisibilitaAutoPropria() {
+            const mezzo = document.getElementById('mezzoTrasporto').value;
+            const boxAuto = document.getElementById('boxAutoPropria');
+            if (mezzo === 'Auto propria') {
+                boxAuto.classList.remove('hidden');
+            } else {
+                boxAuto.classList.add('hidden');
+            }
+            aggiornaTutto();
+        }
+
+        // Aggiunge una nuova scheda/riga di spesa dinamica
+        function aggiungiVoceSpesa(datiIniziali = null) {
+            contatoreSpese++;
+            const idRiga = `spesa-row-${contatoreSpese}`;
+            const container = document.getElementById('listaSpese');
+
+            const optionsTipologia = TIPOLOGIE_SPESA.map(t =>
+                `<option value="${t}" ${datiIniziali && datiIniziali.tipologia === t ? 'selected' : ''}>${t}</option>`
+            ).join('');
+
+            const optionsPagamento = METODI_PAGAMENTO.map(m =>
+                `<option value="${m.value}" ${datiIniziali && datiIniziali.pagamento === m.value ? 'selected' : ''}>${m.label}</option>`
+            ).join('');
+
+            const rowDiv = document.createElement('div');
+            rowDiv.id = idRiga;
+            rowDiv.className = 'spesa-item p-3.5 bg-slate-50/90 border border-slate-200 rounded-xl space-y-3 transition-all hover:border-slate-300';
+
+            rowDiv.innerHTML = `
+                <div class="grid grid-cols-1 sm:grid-cols-12 gap-3 items-start">
+                    <!-- Tipologia di Spesa -->
+                    <div class="sm:col-span-5">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Tipologia di Spesa</label>
+                        <select class="spesa-tipologia w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600">
+                            ${optionsTipologia}
+                        </select>
+                    </div>
+
+                    <!-- Importo in Euro -->
+                    <div class="sm:col-span-3">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Importo (€)</label>
+                        <input type="number" step="0.01" min="0" placeholder="0.00" value="${datiIniziali ? datiIniziali.importo : ''}"
+                            class="spesa-importo w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm font-medium text-right focus:outline-none focus:border-blue-600">
+                    </div>
+
+                    <!-- Metodo di Pagamento -->
+                    <div class="sm:col-span-4">
+                        <label class="block text-xs font-semibold text-slate-600 mb-1">Pagamento</label>
+                        <select class="spesa-pagamento w-full px-3 py-2 bg-white border border-slate-300 rounded-lg text-sm focus:outline-none focus:border-blue-600">
+                            ${optionsPagamento}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <input type="text" placeholder="Descrizione / Note giustificativo (es. Pranzo cliente, Pedaggio A1...)" value="${datiIniziali ? datiIniziali.descrizione : ''}"
+                        class="spesa-descrizione flex-1 px-3 py-1.5 bg-white border border-slate-300 rounded-lg text-xs sm:text-sm focus:outline-none focus:border-blue-600">
+
+                    <button type="button" onclick="rimuoviVoceSpesa('${idRiga}')" title="Rimuovi voce di spesa"
+                        class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition cursor-pointer shrink-0">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </div>
+            `;
+
+            container.appendChild(rowDiv);
+
+            // Collega eventi per aggiornamento in tempo reale
+            rowDiv.querySelectorAll('input, select').forEach(el => {
+                el.addEventListener('input', aggiornaTutto);
+                el.addEventListener('change', aggiornaTutto);
+            });
+
+            aggiornaStatoVuotoSpese();
+            aggiornaTutto();
+        }
+
+        // Rimuove una riga di spesa
+        function rimuoviVoceSpesa(idRiga) {
+            const riga = document.getElementById(idRiga);
+            if (riga) {
+                riga.remove();
+                aggiornaStatoVuotoSpese();
+                aggiornaTutto();
+            }
+        }
+
+        // Gestisce il messaggio quando non ci sono righe di spesa
+        function aggiornaStatoVuotoSpese() {
+            const righe = document.querySelectorAll('.spesa-item');
+            const emptyMsg = document.getElementById('emptySpeseMsg');
+            if (righe.length === 0) {
+                emptyMsg.classList.remove('hidden');
+            } else {
+                emptyMsg.classList.add('hidden');
+            }
+        }
+
+        // Calcola tutti i totali (chilometrici, spese documentate, rimborsi)
+        function calcolaTotali() {
+            const mezzo = document.getElementById('mezzoTrasporto').value;
+            let kmPercorsi = 0;
+            let tariffaKm = 0;
+            let rimborsoKm = 0;
+
+            if (mezzo === 'Auto propria') {
+                kmPercorsi = parseFloat(document.getElementById('kmPercorsi').value) || 0;
+                tariffaKm = parseFloat(document.getElementById('tariffaKm').value) || 0;
+                rimborsoKm = Math.max(0, kmPercorsi * tariffaKm);
+            }
+
+            let subtotaleSpese = 0;
+            let totaleCartaAziendale = 0;
+            let totaleSpesePersonali = 0;
+            const elencoSpese = [];
+
+            document.querySelectorAll('.spesa-item').forEach((item) => {
+                const tipologia = item.querySelector('.spesa-tipologia').value;
+                const importo = Math.max(0, parseFloat(item.querySelector('.spesa-importo').value) || 0);
+                const pagamento = item.querySelector('.spesa-pagamento').value;
+                const descrizione = item.querySelector('.spesa-descrizione').value.trim();
+
+                if (importo > 0 || descrizione !== '') {
+                    elencoSpese.push({
+                        tipologia,
+                        importo,
+                        pagamento,
+                        descrizione
+                    });
+                }
+
+                subtotaleSpese += importo;
+                if (pagamento === 'Aziendale') {
+                    totaleCartaAziendale += importo;
+                } else {
+                    totaleSpesePersonali += importo;
+                }
+            });
+
+            const totaleDaRimborsare = totaleSpesePersonali + rimborsoKm;
+            const totaleComplessivo = subtotaleSpese + rimborsoKm;
+
+            return {
+                mezzo,
+                kmPercorsi,
+                tariffaKm,
+                rimborsoKm,
+                subtotaleSpese,
+                totaleCartaAziendale,
+                totaleSpesePersonali,
+                totaleDaRimborsare,
+                totaleComplessivo,
+                elencoSpese
+            };
+        }
+
+        // Aggiorna i badge UI e l'anteprima testuale
+        function aggiornaTutto() {
+            const dati = calcolaTotali();
+
+            // Aggiorna badge box auto propria
+            document.getElementById('badgeTotaleKm').textContent = `Rimborso Km: ${formattaEuro(dati.rimborsoKm)}`;
+
+            // Aggiorna pannello riepilogo
+            document.getElementById('summarySpeseDoc').textContent = formattaEuro(dati.subtotaleSpese);
+            document.getElementById('summaryRimborsoKm').textContent = formattaEuro(dati.rimborsoKm);
+            document.getElementById('summaryCartaAziendale').textContent = formattaEuro(dati.totaleCartaAziendale);
+            document.getElementById('summaryDaRimborsare').textContent = formattaEuro(dati.totaleDaRimborsare);
+            document.getElementById('summaryTotaleGenerale').textContent = formattaEuro(dati.totaleComplessivo);
+
+            // Aggiorna anteprima report
+            document.getElementById('previewBox').textContent = generaTestoReport(dati);
+        }
+
+        // Genera il report testuale formattato e allineato
+        function generaTestoReport(datiCalcolati = null) {
+            const dati = datiCalcolati || calcolaTotali();
+
+            const titolo = document.getElementById('titoloMissione').value.trim() || '[Non specificato]';
+            const operatore = document.getElementById('operatore').value.trim() || '[Non specificato]';
+            const stato = document.getElementById('stato').value;
+            const dataRaw = document.getElementById('dataMissione').value;
+            const dataFormattata = dataRaw ? new Date(dataRaw + 'T00:00:00').toLocaleDateString('it-IT') : '[Non specificata]';
+            const orario = document.getElementById('orario').value.trim() || 'Non specificato';
+            const luogo = document.getElementById('luogo').value.trim() || '[Non specificato]';
+            const descrizione = document.getElementById('descrizione').value.trim() || '[Nessuna descrizione inserita]';
+
+            // Dati Viaggio
+            const partenza = document.getElementById('partenza').value.trim() || 'Non specificata';
+            const arrivo = document.getElementById('arrivo').value.trim() || 'Non specificata';
+            const noteViaggio = document.getElementById('noteViaggio').value.trim();
+
+            let bloccoViaggio = `MEZZO:      ${dati.mezzo}\n`;
+            bloccoViaggio += `TRATTA:     ${partenza} -> ${arrivo}\n`;
+            if (dati.mezzo === 'Auto propria') {
+                bloccoViaggio += `PERCORSO:   ${dati.kmPercorsi} km x ${formattaEuro(dati.tariffaKm)}/km = ${formattaEuro(dati.rimborsoKm)}\n`;
+            }
+            if (noteViaggio) {
+                bloccoViaggio += `NOTE VIAG.: ${noteViaggio}\n`;
+            }
+
+            // Elenco Spese Documentate
+            let bloccoSpese = '';
+            if (dati.elencoSpese.length === 0) {
+                bloccoSpese = 'Nessuna spesa documentata registrata.\n';
+            } else {
+                dati.elencoSpese.forEach((s, index) => {
+                    const tagPag = s.pagamento === 'Aziendale' ? '[Carta Aziendale]' : '[Da Rimborsare]';
+                    const descTesto = s.descrizione ? ` - ${s.descrizione}` : '';
+                    bloccoSpese += `${index + 1}. ${s.tipologia}${descTesto}\n`;
+                    bloccoSpese += `   Importo: ${formattaEuro(s.importo)}  ${tagPag}\n`;
+                });
+            }
+
+            return `================================================
+RAPPORTO DI MISSIONE E NOTA SPESE
+================================================
 
 OGGETTO:    ${titolo}
 STATO:      ${stato}
 OPERATORE:  ${operatore}
 DATA:       ${dataFormattata}
 ORARIO:     ${orario}
-LUOGO:      ${luogo}
+SEDE/DEST.: ${luogo}
 
-----------------------------------------
-DESCRIZIONE ATTIVITÀ
-----------------------------------------
+------------------------------------------------
+1. DESCRIZIONE ATTIVITÀ SVOLTE
+------------------------------------------------
 ${descrizione}
 
-----------------------------------------
-NOTE E SPESE SOSTENUTE
-----------------------------------------
-${noteSpese}
+------------------------------------------------
+2. DETTAGLI VIAGGIO E TRASFERIMENTO
+------------------------------------------------
+${bloccoViaggio.trim()}
 
-========================================
-Generato il ${new Date().toLocaleString('it-IT')}`;
-    }
+------------------------------------------------
+3. DETTAGLIO SPESE SOSTENUTE
+------------------------------------------------
+${bloccoSpese.trim()}
 
-    // Aggiorna l'anteprima in tempo reale
-    function aggiornaAnteprima() {
-        previewBox.textContent = generaTestoReport();
-    }
+------------------------------------------------
+4. RIEPILOGO ECONOMICO
+------------------------------------------------
+Subtotale spese documentate:   ${formattaEuro(dati.subtotaleSpese)}
+Rimborso chilometrico:         ${formattaEuro(dati.rimborsoKm)}
+------------------------------------------------
+TOTALE COMPLESSIVO MISSIONE:   ${formattaEuro(dati.totaleComplessivo)}
 
-    inputs.forEach(input => input.addEventListener('input', aggiornaAnteprima));
-    aggiornaAnteprima(); // Inizializzazione
+Di cui:
+- Pagato con Carta Aziendale:  ${formattaEuro(dati.totaleCartaAziendale)}
+- DA RIMBORSARE ALL'OPERATORE: ${formattaEuro(dati.totaleDaRimborsare)}
 
-    // Funzione principale: trasferimento via email tramite protocollo mailto
-    function inviaEmail() {
-        const form = document.getElementById('missionForm');
-        if (!form.checkValidity()) {
-            form.reportValidity();
-            return;
+================================================
+Report generato il ${new Date().toLocaleString('it-IT')}`;
         }
 
-        const destinatario = document.getElementById('emailDestinatario').value.trim();
-        const titolo = document.getElementById('titoloMissione').value.trim();
-        const operatore = document.getElementById('operatore').value.trim();
-        const corpo = generaTestoReport();
+        // Invio via Email tramite client predefinito (mailto)
+        function inviaEmail() {
+            const form = document.getElementById('missionForm');
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                mostraNotifica('Compila tutti i campi obbligatori (*)', true);
+                return;
+            }
 
-        const oggettoEmail = encodeURIComponent(`Rapporto Missione: ${titolo} (${operatore})`);
-        const corpoEmail = encodeURIComponent(corpo);
+            const destinatario = document.getElementById('emailDestinatario').value.trim();
+            const titolo = document.getElementById('titoloMissione').value.trim();
+            const operatore = document.getElementById('operatore').value.trim();
+            const corpo = generaTestoReport();
 
-        window.location.href = `mailto:${destinatario}?subject=${oggettoEmail}&body=${corpoEmail}`;
-        mostraNotifica('Apertura client email in corso...');
-    }
+            const oggettoEmail = encodeURIComponent(`Rapporto Missione: ${titolo} (${operatore})`);
+            const corpoEmail = encodeURIComponent(corpo);
 
-    // Copia negli appunti
-    function copiaTesto() {
-        navigator.clipboard.writeText(generaTestoReport()).then(() => {
-            mostraNotifica('Rapporto copiato negli appunti!');
-        });
-    }
+            window.location.href = `mailto:${destinatario}?subject=${oggettoEmail}&body=${corpoEmail}`;
+            mostraNotifica('Apertura client email in corso...');
+        }
 
-    // Scarica file di testo
-    function scaricaTxt() {
-        const testo = generaTestoReport();
-        const titolo = document.getElementById('titoloMissione').value.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'missione';
-        const blob = new Blob([testo], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `rapporto_${titolo}.txt`;
-        a.click();
-        URL.revokeObjectURL(url);
-        mostraNotifica('File scaricato!');
-    }
+        // Copia negli appunti con fallback compatibile con iframe
+        function copiaTesto() {
+            const testo = generaTestoReport();
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(testo).then(() => {
+                    mostraNotifica('Rapporto copiato negli appunti!');
+                }).catch(() => {
+                    copiaFallback(testo);
+                });
+            } else {
+                copiaFallback(testo);
+            }
+        }
 
-    // Reset
-    function resetModulo() {
-        if (confirm('Vuoi cancellare tutti i dati inseriti?')) {
+        function copiaFallback(testo) {
+            const textArea = document.createElement('textarea');
+            textArea.value = testo;
+            textArea.style.position = 'fixed';
+            textArea.style.left = '-9999px';
+            document.body.appendChild(textArea);
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                mostraNotifica('Rapporto copiato negli appunti!');
+            } catch (err) {
+                mostraNotifica('Impossibile copiare automaticamente il testo', true);
+            }
+            document.body.removeChild(textArea);
+        }
+
+        // Scarica file .TXT
+        function scaricaTxt() {
+            const testo = generaTestoReport();
+            const titolo = document.getElementById('titoloMissione').value.trim().replace(/[^a-z0-9]/gi, '_').toLowerCase() || 'missione';
+            const blob = new Blob([testo], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `rapporto_${titolo}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            mostraNotifica('File .TXT scaricato!');
+        }
+
+        // Gestione Reset Modulo senza confirm() nativo
+        function mostraConfermaReset() {
+            document.getElementById('btnResetInit').classList.add('hidden');
+            document.getElementById('boxConfermaReset').classList.remove('hidden');
+        }
+
+        function annullaReset() {
+            document.getElementById('boxConfermaReset').classList.add('hidden');
+            document.getElementById('btnResetInit').classList.remove('hidden');
+        }
+
+        function eseguiResetModulo() {
             document.getElementById('missionForm').reset();
             document.getElementById('dataMissione').valueAsDate = new Date();
-            aggiornaAnteprima();
+            document.getElementById('tariffaKm').value = '0.45';
+
+            // Svuota tutte le spese e ne ricrea una vuota
+            document.getElementById('listaSpese').innerHTML = '';
+            contatoreSpese = 0;
+            aggiungiVoceSpesa();
+
+            gestisciVisibilitaAutoPropria();
+            annullaReset();
+            aggiornaTutto();
+            mostraNotifica('Modulo svuotato con successo');
         }
-    }
 
-    function mostraNotifica(messaggio) {
-        const toast = document.getElementById('toast');
-        toast.textContent = messaggio;
-        toast.classList.add('show');
-        setTimeout(() => toast.classList.remove('show'), 3000);
-    }
-</script>
+        // Mostra toast di notifica
+        function mostraNotifica(messaggio, isErrore = false) {
+            const toast = document.getElementById('toast');
+            toast.textContent = messaggio;
+            toast.classList.remove('bg-emerald-600', 'bg-red-600', 'opacity-0', 'translate-y-2');
+            toast.classList.add(isErrore ? 'bg-red-600' : 'bg-emerald-600', 'opacity-100', 'translate-y-0');
 
+            clearTimeout(toast._timer);
+            toast._timer = setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'translate-y-2');
+            }, 3000);
+        }
+    </script>
 </body>
 </html>
